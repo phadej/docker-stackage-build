@@ -77,14 +77,17 @@ RUN echo "Install ZeroMQ" \
   && make install \
   && rm -rf /usr/src/zeromq
 
-# Stackage
+# Stackage and hscolour!
 WORKDIR /root
 
 RUN cabal update \
-  && cabal install stackage \
-  && cp /root/.cabal/bin/stackage /opt/ghc/bin/stackage \
+  && cabal install stackage hscolour \
+  && cp /root/.cabal/bin/stackage /root/.cabal/bin/HsColour /opt/ghc/bin/ \
+  && for pkg in `ghc-pkg --user list  --simple-output`; do ghc-pkg unregister --force $pkg; done \
   && rm -rf /root/.cabal \
   && stackage --version
+
+# TODO: unpriviled user for builds
 
 # Done
 VOLUME /stackage
