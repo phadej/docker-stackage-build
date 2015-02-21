@@ -80,11 +80,20 @@ RUN echo "Install ZeroMQ" \
 # Stackage and hscolour!
 WORKDIR /root
 
-RUN cabal update \
-  && cabal install stackage hscolour \
-  && cp /root/.cabal/bin/stackage /root/.cabal/bin/HsColour /opt/ghc/bin/ \
+RUN cabal update && cabal install hscolour
+
+RUN git clone https://github.com/phadej/stackage.git
+WORKDIR /root/stackage
+
+RUN git checkout skip-haddock \
+  && cabal configure \
+  && cabal install
+
+RUN cabal install hscolour
+RUN cp /root/.cabal/bin/stackage /root/.cabal/bin/HsColour /opt/ghc/bin/ \
   && for pkg in `ghc-pkg --user list  --simple-output`; do ghc-pkg unregister --force $pkg; done \
   && rm -rf /root/.cabal \
+  && rm -rf /root/stackage \
   && stackage --version
 
 # TODO: unpriviled user for builds
