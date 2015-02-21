@@ -86,6 +86,7 @@ RUN git clone https://github.com/phadej/stackage.git
 WORKDIR /root/stackage
 
 RUN git checkout skip-haddock \
+  && cabal install --only-dependencies \
   && cabal configure \
   && cabal install
 
